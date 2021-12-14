@@ -14,7 +14,10 @@ NIMRb <- readRDS(paste0(path2inputs, "NIMR/NIMRb.rds"))  # Migration raw
 NIMRc <- readRDS(paste0(path2inputs, "NIMR/NIMRc.rds"))  # Migration adjusted
 NIMRd <- readRDS(paste0(path2inputs, "NIMR/NIMRd.rds"))  # Add decline
 
-# NEED TO REWRITE using 'projection' and 'projectionsList'
+# Four alternative projections are calculated based on the NIMR values in the
+# preceding four lines. These are not consistent subnational projections. A
+# consistent subnational projection for the fourth case, NIMRd, is calculated
+# by script2-calculate-consistent-subnational-projections.R
 
 # PROJECTION 1: No migration
 NIMR <- NIMRa

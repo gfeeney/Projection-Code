@@ -169,8 +169,7 @@ calculate.DeathsIP <- function(pframe, md = metadata) {
   return(pframe)
 }
 calculate.SurvivorsIP <- function(pframe, md = metadata) {
-  # Survivors of initial population
-  # THIS CODE SHOULD BE REVISITED AND PROBABLY REVISED!
+  # Survivors of initial population (consider revising)
   n <- dim(pframe)[1]/2  - 5
   rows <- 2:(n + 1)
   calculate <- function(pframe, rows) {
@@ -315,13 +314,13 @@ calculate.subnational.pcycle <- function(Nat, SubNat, md = metadata) {
   # Initialize matrix of reconciliation parameters
   rMatrix <- matrix(0, nrow = length(ASDBrows), ncol = 3)
   rownames(rMatrix) <- ASDBrows
-  colnames(rMatrix) <- c("Dfactors", "Bfactors", "NIMx")
+  colnames(rMatrix) <- c("Deaths", "Births", "NetMigs")
   
   SubNat <- lapply(SubNat, calculate.DeathsIP)
   adj <- CFA.calculate(SubNat, Nat, ASDrows, "Deaths")
   SubNat <- CFA.adjust(SubNat, ASDrows, "Deaths", adj)
   CFA.check(SubNat, Nat, ASDrows, "Deaths")
-  rMatrix[ASDrows, "Dfactors"] <- adj
+  rMatrix[ASDrows, "Deaths"] <- adj
   
   SubNat <- lapply(SubNat, calculate.SurvivorsIP)
   
@@ -330,7 +329,7 @@ calculate.subnational.pcycle <- function(Nat, SubNat, md = metadata) {
   adj <- CFA.calculate(SubNat, Nat, Brows, "Births")
   SubNat <- CFA.adjust(SubNat, Brows, "Births", adj)
   CFA.check(SubNat, Nat, Brows, "Births")
-  rMatrix[Brows, "Bfactors"] <- adj
+  rMatrix[Brows, "Births"] <- adj
   
   SubNat <- lapply(SubNat, calculate.Births2)
   
@@ -339,7 +338,7 @@ calculate.subnational.pcycle <- function(Nat, SubNat, md = metadata) {
   adj <- CFA.calculate(SubNat, Nat, DBrows, "Deaths")
   SubNat <- CFA.adjust(SubNat, DBrows, "Deaths", adj)
   CFA.check(SubNat, Nat, DBrows, "Deaths")
-  rMatrix[DBrows, "Dfactors"] <- adj
+  rMatrix[DBrows, "Deaths"] <- adj
   
   SubNat <- lapply(SubNat, calculate.SurvivorsB)
   
@@ -348,7 +347,7 @@ calculate.subnational.pcycle <- function(Nat, SubNat, md = metadata) {
   SubNat <- x.adjust(SubNat, ASDrows, "NIM", x)
   x.check(SubNat, ASDrows, "NIM")
   
-  rMatrix[ASDrows, "NIMx"] <- x
+  rMatrix[ASDrows, "NetMigs"] <- x
   
   SubNat <- lapply(SubNat, calculate.ASDout)
   
@@ -356,9 +355,9 @@ calculate.subnational.pcycle <- function(Nat, SubNat, md = metadata) {
   return(SubNat)
 }
 calculate.consistent.projections <- function(np, snpi, md = metadata) {
-  # np: *Calculated* national projection pcycle list
-  # snpi: *Initialized* subnational projections list matrix (5x47)
-  # Value: snp *Calculated* subnational projections consistent with np
+  # Arg: np = national projection
+  # Arg: snpi = Initialized subnational projection List Matrix (5x47)
+  # Val: snp = consistent subnational projection List Matrix (5x47)
   snp <- snpi
   rowsASD <- metadata$age$ASDrows
   for (i in 1:length(snpi)) {
