@@ -24,36 +24,40 @@ NIMR <- NIMRa
 proj1LM <- calculate.projections(places, BaseASD, nLx, ASBR, NIMR, md = metadata)
 saveRDS(proj1LM, paste0(path2outputs, "projections/proj1LM.rds"))
 proj1Totals <- t(sapply(proj1LM, get.projTotals))
-proj1Totals <- sort.PlacesByGrowth(proj1Totals)
-proj1Totals
 write.csv(proj1Totals, paste0(path2outputs, "projections/proj1Totals.csv"))
+proj1TotalsSorted <- sort.PlacesByGrowth(proj1Totals)
+proj1TotalsSorted
+write.csv(proj1TotalsSorted, paste0(path2outputs, "projections/proj1TotalsSorted.csv"))
 
 # PROJECTION 2: Migration raw
 NIMR   <- readRDS(paste0(path2inputs, "NIMR/NIMRb.rds"))
 proj2LM <- calculate.projections(places, BaseASD, nLx, ASBR, NIMR, md = metadata)
 saveRDS(proj2LM, paste0(path2outputs, "projections/proj2LM.rds"))
 proj2Totals <- t(sapply(proj2LM, get.projTotals))
-proj2Totals <- sort.PlacesByGrowth(proj2Totals)
-proj2Totals
 write.csv(proj2Totals, paste0(path2outputs, "projections/proj2Totals.csv"))
+proj2TotalsSorted <- sort.PlacesByGrowth(proj2Totals)
+proj2TotalsSorted
+write.csv(proj2TotalsSorted, paste0(path2outputs, "projections/proj2TotalsSorted.csv"))
 
 # PROJECTION 3: Migration adjusted by LTCSRTMig census survival estimates
 NIMR  <- readRDS(paste0(path2inputs, "NIMR/NIMRc.rds"))
 proj3LM <- calculate.projections(places, BaseASD, nLx, ASBR, NIMR, md = metadata)
 saveRDS(proj3LM, paste0(path2outputs, "projections/proj3LM.rds"))
 proj3Totals <- t(sapply(proj3LM, get.projTotals))
-proj3Totals <- sort.PlacesByGrowth(proj3Totals)
-proj3Totals
 write.csv(proj3Totals, paste0(path2outputs, "projections/proj3Totals.csv"))
+proj3TotalsSorted <- sort.PlacesByGrowth(proj3Totals)
+proj3TotalsSorted
+write.csv(proj3TotalsSorted, paste0(path2outputs, "projections/proj3TotalsSorted.csv"))
 
 # PROJECTION 4: Migration adjusted with decline
 NIMR  <- readRDS(paste0(path2inputs, "NIMR/NIMRd.rds"))
 proj4LM <- calculate.projections(places, BaseASD, nLx, ASBR, NIMR, md = metadata)
 saveRDS(proj4LM, paste0(path2outputs, "projections/proj4LM.rds"))
 proj4Totals <- t(sapply(proj4LM, get.projTotals))
-proj4Totals <- sort.PlacesByGrowth(proj4Totals)
-proj4Totals
 write.csv(proj4Totals, paste0(path2outputs, "projections/proj4Totals.csv"))
+proj4TotalsSorted <- sort.PlacesByGrowth(proj4Totals)
+proj4TotalsSorted
+write.csv(proj4TotalsSorted, paste0(path2outputs, "projections/proj4TotalsSorted.csv"))
 
 # PROJECTION 5: NIMRd with reconciliation of subnational nation to national projections
 # See script-projections-reconciliation.R
