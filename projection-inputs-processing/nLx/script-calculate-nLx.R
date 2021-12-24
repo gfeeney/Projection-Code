@@ -25,32 +25,32 @@ library(xlsx)
 # STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1
 # Read in extrapolated Life Expectancy at Birth for each place and pcycle
 # OUTPUT LEBlist
-# path <- paste0(path2inputs, "nLx/LEB/")
-# filenames <- dir(path)
-# LEB <- vector(mode = "list", length = length(filenames))
-# names(LEB) <- places
-# for (i in 1:length(LEB)) {
-#   filename <- paste0(path, filenames[i])
-#   x <- read.xlsx(filename, sheetName = "E0LGST", startRow = 10, endRow = 40, 
-#                  colIndex = 6:8)
-#   colnames(x) <- c("Year", "Male", "Female")
-#   rownames(x) <- x[, "Year"]
-#   x <- x[, -1]
-#   x[, c("Female", "Male")]
-#   LEB[[i]] <- as.matrix(t(x[, c("Female", "Male")]))
-# }
-# rm(x)
-# 
-# LEBmid <- function(LEB, pcycles) {
-#   lo <- LEB[, c("2022", "2027", "2032", "2037", "2042")]
-#   hi <- LEB[, c("2023", "2028", "2033", "2038", "2043")]
-#   mid <- (lo + hi) / 2
-#   colnames(mid) <- pcycles   
-#   return(mid)
-# }
-# LEBlist <- lapply(LEB, LEBmid, pcycles)
-# LEBlist
-# saveRDS(LEBlist, paste0(path2inputs, "nLx/LEBlist.rds"))
+path <- paste0(path2inputs, "nLx/LEB/")
+filenames <- dir(path)
+LEB <- vector(mode = "list", length = length(filenames))
+names(LEB) <- places
+for (i in 1:length(LEB)) {
+  filename <- paste0(path, filenames[i])
+  x <- read.xlsx(filename, sheetName = "E0LGST", startRow = 10, endRow = 40,
+                 colIndex = 6:8)
+  colnames(x) <- c("Year", "Male", "Female")
+  rownames(x) <- x[, "Year"]
+  x <- x[, -1]
+  x[, c("Female", "Male")]
+  LEB[[i]] <- as.matrix(t(x[, c("Female", "Male")]))
+}
+rm(x)
+
+LEBmid <- function(LEB, pcycles) {
+  lo <- LEB[, c("2022", "2027", "2032", "2037", "2042")]
+  hi <- LEB[, c("2023", "2028", "2033", "2038", "2043")]
+  mid <- (lo + hi) / 2
+  colnames(mid) <- pcycles
+  return(mid)
+}
+LEBlist <- lapply(LEB, LEBmid, pcycles)
+LEBlist
+saveRDS(LEBlist, paste0(path2inputs, "nLx/LEBlist.rds"))
 
 LEBlist <- readRDS(paste0(path2inputs, "nLx/LEBlist.rds"))
 # LEBlist is list of 2x5 matrices (Sex x pcycle) for each place, Kenya and the
@@ -59,7 +59,7 @@ LEBlist <- readRDS(paste0(path2inputs, "nLx/LEBlist.rds"))
 # STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2
 # Read in 2019 census nLx estimates
 # OUTPUT nLxCensusList
-pathfile <- paste0(path2inputs, "nLx/census2019-nLx-estimates.xlsx")
+pathfile <- paste0(path2inputs, "nLx/census2019-nLx-estimates20211118.xlsx")
 x <- read.xlsx(pathfile, sheetName = "main")
 rownames(x) <- x[, 1]
 nLxDF <- x[, -1]

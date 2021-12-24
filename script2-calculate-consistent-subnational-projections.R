@@ -45,7 +45,7 @@ proj5TotalsSorted
 write.csv(proj5TotalsSorted, paste0(path2outputs, "projections/proj5TotalsSorted.csv"))
 
 # Look at components of change for counties
-# get.ComponentsMatrix(snp$Kwale)
+get.ComponentsMatrix(proj5Totals$Kwale)
 # get.ComponentsMatrix(snp$Kilifi)
 # get.ComponentsMatrix(snp$`Tana River`)
 # get.ComponentsMatrix(snp$`Taita-Taveta`)

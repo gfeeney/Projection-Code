@@ -17,5 +17,4 @@ names(asd5x1.list)
 # The above code does the grunt work of producing projected 5 year
 # age-sex distributions at 5 year time intervals and of interpolating
 # 5x5 age distributions to 5x1 age distributions (at 1 year rather
-# than 5 year intervals). Additional work is mainly formating and
-# may be scripted
+# than 5 year intervals). Additional work is mainly formating.

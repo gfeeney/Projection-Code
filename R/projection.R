@@ -63,9 +63,9 @@ check.input.data <- function(places, pcycles, nLx, ASBR, NIMR,
 }
 initialize.projection.pframes <- function(place, BaseASD, nLx, ASBR, NIMR, 
                                           md = metadata) { 
-  # Initialize pframe for particular place and projection cycle. Construct the
-  # empty pframe, then assign values to the nLx, ASBR, and NIMR columns, and
-  # for pcycle1 only, the BaseASD column
+  # Initialize pframes for place with values from BaseASD, nLx, SBR, and NIMR
+  # Return the initialized pframes with attribute identifying place
+  # Calls construct.pframe()
   nLxrows.pframe <- md$age$nLxrows.pframe
   nLxrows.source <- md$age$nLxrows.source
   ASBRrows <- md$age$ASBRrows
@@ -105,9 +105,9 @@ initialize.projection.pframes <- function(place, BaseASD, nLx, ASBR, NIMR,
   return(pframes)
   }
 calculate.projection <- function(initialized.pframes, md = metadata) {
-  # Calculate projections for initialized pframelist
-  # CORRESPONDING MODIFICATION HERE IF NECESSARY; EXISTING IS TOO COMPLICATED, MAKE
-  # THE BASE FUNCTIONS SIMPLER, USE A SIMPLE DO LOOP OVER areas IN THE SCRIPTS
+  # Calculate projections from initialized pframes and return projection
+  # The numerous steps for calculating each pframe are required for calculating
+  # consistent subnational projections
   ASBRrows <- md$Age$ASBRrows
   ASDrows <- md$Age$ASDrows
   width   <- md$Age$width
@@ -142,8 +142,7 @@ calculate.projections <- function(places, BaseASD, nLx, ASBR, NIMR,
   projections.init <- projections
   for (i in 1:length(projections)) {
     place <- names(projections)[i]
-    projections.init[[i]] <- 
-      initialize.projection.pframes(place, BaseASD, nLx, ASBR, NIMR)
+    projections.init[[i]] <- initialize.projection.pframes(place, BaseASD, nLx, ASBR, NIMR)
     projections[[i]] <- calculate.projection(projections.init[[i]])
   }
   return(projections)
