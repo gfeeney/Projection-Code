@@ -449,13 +449,13 @@ asd5x1.from.asd5x5 <- function(asd5x5) {
   asd5x1 <- rbind(adf5x1, adm5x1)
   return(asd5x1)
 }
-get.AgeSexDistribution <- function(projection, md = metadata){
+get.AgeSexDistribution <- function(proj, md = metadata){
   ASDrows <- md$age$ASDrows
   BaseTime <- md$time$BaseTime
-  x1 <- lapply(projection, function(x){x[ASDrows, "ASDout"]})
+  x1 <- lapply(proj, function(x){x[ASDrows, "ASDout"]})
   x2 <- do.call(cbind, x1)
-  x3 <- cbind(projection[[1]][ASDrows, "ASDin"], x2)
-  colnames(x3) <- BaseTime + 5 * (1:dim(x3)[2] - 1)
+  x3 <- cbind(proj[[1]][ASDrows, "ASDin"], x2)
+  colnames(x3) <- c(names(proj), "End")
   sex <- c("female", "male", "both")
   age <- md$age$ADrows
   time <- colnames(x3)
@@ -465,7 +465,7 @@ get.AgeSexDistribution <- function(projection, md = metadata){
   asd[, , "female"] <- x3[1:n, ]
   asd[, , "male"] <- x3[n + 1:n, ]
   asd[, , "both"] <- asd[, , "female"] + asd[, , "male"]
-  attr(asd, "place") <- attr(projection[[1]], "place")
+  attr(asd, "place") <- attr(proj[[1]], "place")
   return(asd)
 }
 get.projectionResults <- function(projection) {
@@ -497,8 +497,7 @@ sort.PlacesByGrowth <- function(totals) {
   out <- out[rev(order(out[, n + 1])), ]
   return(out)
 }
-
-get.ComponentsMatrix <- function(projection, md = metadata) {
+get.ComponentsMatrix <- function(proj, md = metadata) {
   # Arg: A projection
   # Value: A matrix showing components for each projection cycle
   get.components <- function(pframe, md = metadata) {
@@ -520,14 +519,13 @@ get.ComponentsMatrix <- function(projection, md = metadata) {
                     "NetMig", "Growth2")
     return(out)
   }
-  components <- matrix(0, nrow = length(pcycles), ncol = 8)
-  rownames(components) <- pcycles
+  components <- matrix(0, nrow = length(proj), ncol = 8)
+  rownames(components) <- names(proj)
   colnames(components) <- c("Pop1", "Pop2", "Growth1", "Births", "Deaths",
                             "NatInc", "NetMig", "Growth2")
-  for (i in 1:length(pcycles)) {
-    components[i, ] <- get.components(projection[[i]])
+  for (i in 1:length(proj)) {
+    components[i, ] <- get.components(proj[[i]])
   }
-  components <- round(components, 0)
   return(t(components))
 }
 # ------------- END Functions for processing projection outputs -------------- #
