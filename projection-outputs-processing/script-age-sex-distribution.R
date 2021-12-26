@@ -3,44 +3,52 @@ path2inputs <- metadata$paths$path2inputs
 path2outputs <- metadata$paths$path2outputs
 path2R <- metadata$paths$path2R
 source(paste0(path2R, "projection.R"))
+require("XLConnect")
+projLM <- readRDS(paste0(path2outputs, "projections/proj5LM.rds"))
 
-proj5LM <- readRDS(paste0(path2outputs, "projections/proj5LM.rds"))
-asdList <- get.AgeSexDistribution(proj5LM$Kenya)  # dim(asdList)
-asdBoth <- asdList[, , "both"]
-colnames(asdBoth) <- 2020 + 5 * 0:5
+make.table1 <- function(i, projLM, md = metadata) {
+  # Arg: i index of projection in projLM, metadata
+  # Eff: write table1 to Excel spreadsheet file
+  proj <- projLM[[i]]
+  place <- names(projLM)[i]
+  asd <- get.AgeSexDistribution(proj)[, , "both"]
+  colnames(asd) <- 2020 + 5 * 0:5
+  asd <- as.data.frame(asd)
+  asd <- cbind(Age = rownames(asd), asd)
+  
+  # MUST PREPEND TWO-DIGIT NUMBERS TO PLACE NAMES TO GET ORDER IN FILE MANAGER
+  
+  cog1 <- get.ComponentsMatrix(proj)[c("Births", "Deaths", "NatInc", "NetMig"), ]
+  cog1 <- as.data.frame(cog1)
+  cog1 <- cbind(cog1, End = rep("-", times = dim(cog1)[1]))
+  colnames(cog1) <- c("2020-25", "2025-30", "2030-35", "2035-40", "2045-50", "2050-55")
+  cog1 <- cbind(Component = rownames(cog1), cog1)
+  
+  cog2 <- matrix(0, nrow = dim(cog1)[1], ncol = length(proj))
+  rownames(cog2) <- c("CBR", "CDR", "CNIR", "CNMR")
+  colnames(cog2) <- names(proj)
+  totals <- apply(asd[, 2:7], 2, sum)
+  PYL <- (5 / 2) * (totals[1:5] + totals[2:6])
+  cog2["CBR", ] <- 1000 * unlist(cog1["Births", 2:6]) / PYL
+  cog2["CDR", ] <- 1000 * unlist(cog1["Deaths", 2:6]) / PYL
+  cog2["CNIR", ] <- cog2["CBR", ] - cog2["CDR", ]
+  cog2["CNMR", ] <- 1000 * unlist(cog1["NetMig", 2:6]) / PYL
+  cog2 <- as.data.frame(cog2)
+  cog2 <- cbind(RateComp = rownames(cog2), cog2)
+  cog2 <- cbind(cog2, End = rep("-", times = dim(cog2)[1]))
+  colnames(cog2) <- colnames(cog1)
+  
+  table.name <- paste0("table1-", names(projLM)[i], ".xlsx")
+  wb <- loadWorkbook(table.name, create = TRUE)
+  createSheet(wb, name = "main")
+  writeWorksheet(wb, asd, sheet = "main", startRow = 1)
+  writeWorksheet(wb, cog1, sheet = "main", startRow = 23)
+  writeWorksheet(wb, cog2, sheet = "main", startRow = 28, header = FALSE)
+  saveWorkbook(wb)
+  return(table.name)
+}
 
-projKenya <- proj5LM$Kenya
-pframe <- projKenya[[1]]
-is.matrix(pframe)
-
-cog <- get.ComponentsMatrix(projKenya)
-cog <- cbind(cog, rep(NA, times = dim(cog)[1]))
-colnames(cog) <- colnames(asdBoth)
-cog[c("Births", "Deaths", "NatInc", "NetMig"), ]
-
-PYL <- (5 / 2) * (asdBoth[, 1:5] + asdBoth[, 2:6])
-totals <- apply(asdBoth, 2, sum)
-PYL <- (5 / 1) * (totals[1:5] + totals[2:6])
-CBR <- round(1000 * cog["Births", 1:5] / PYL, 1)
-CDR <- round(1000 * cog["Deaths", 1:5] / PYL, 1)
-CRNI <- CBR - CDR
-
-adi2020 <- round(100 * x[, 1] / x[1, 1], 0)
-adi2045 <- round(100 * x[, 6] / x[1, 6], 0)
-
-round(100 * (x[, 6] - x[, 1]) / x[, 1], 0)
-
-PcntGro <- round((100 * x[, 6] - x[, 1]) / x[, 1], 0)
-adtable <- cbind(x, adi2020, adi2045, adchange)
-adtable
-
-
-
-write.csv(BothSexes, paste0(path2outputs, "ProjectedAgeDistribution.csv"))
-Female <- round(asdList[, , "female"], 0)
-Male <- round(asdList[, , "male"], 0)
-BothSexes
-Female
-Male
-ASSR <- round(100 * Male / Female, 0)
-ASSR
+for (i in 1:length(projLM)) {
+  table.name <- make.table1(i, projLM, md = metadata)
+  cat(paste0(table.name, " written . . .\n"))
+}
