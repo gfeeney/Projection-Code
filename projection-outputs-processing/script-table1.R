@@ -7,37 +7,66 @@ require("openxlsx")
 
 # Gotcha: If target .xlsx file is open, code will silently fail
 
-# Initialize for 5 year projection results
 projLM <- readRDS(paste0(path2outputs, "projections/proj5LM.rds"))
-i <- 1
-proj <- projLM[[i]]        # input projection
-place <- names(projLM)[i]
-filename <- paste0(metadata$place$codes[i], place, ".xlsx")
-pathfile <- paste0(path2outputs, "annex-tables/", filename)  # output file
-# Additional initialization for annual projections 2020-2035
-proj13 <- proj[1:3]
-asd5x5 <- get.projectedASD(proj)
-asd5x1 <- asd5x1.from.asd5x5(asd5x5)
-colnames(asd5x1) <- 2019 + 1:dim(asd5x1)[2]
-female <- asd5x1[1:20, ]
-female <- rbind(female, apply(female, 2, sum))
-rownames(female)[21] <- "All Ages"
-male <- asd5x1[20 + 1:20, ]
-male <- rbind(male, apply(male, 2, sum))
-rownames(male)[21] <- "All Ages"
-both <- female + male
-rownames(both)[21] <- "All Ages"
+for (i in 1:length(projLM)) {
+  # Initialize for 5 year projection results
+  proj <- projLM[[i]]        # input projection
+  place <- names(projLM)[i]
+  filename <- paste0(metadata$place$codes[i], place, ".xlsx")
+  pathfile <- paste0(path2outputs, "annex-tables/", filename)  # output file
+  # Additional initialization for annual projections 2020-2035
+  proj13 <- proj[1:3]
+  asd5x5 <- get.projectedASD(proj)
+  asd5x1 <- asd5x1.from.asd5x5(asd5x5)
+  colnames(asd5x1) <- 2019 + 1:dim(asd5x1)[2]
+  female <- asd5x1[1:20, ]
+  female <- rbind(female, apply(female, 2, sum))
+  rownames(female)[21] <- "All Ages"
+  male <- asd5x1[20 + 1:20, ]
+  male <- rbind(male, apply(male, 2, sum))
+  rownames(male)[21] <- "All Ages"
+  both <- female + male
+  rownames(both)[21] <- "All Ages"
+  
+  # Write output file
+  wb <- loadWorkbook(paste0(path2outputs, "annex-tables/template.xlsx"))
+  write.page1(wb, proj, pathfile)
+  write.page2(wb, proj, pathfile)
+  write.page3(wb, both, male, female)
+  write.page4(wb, both, male, female)
+  write.page5(wb, both, male, female)
+  write.page6(wb, both, male, female)
+  write.page7(wb, both, male, female)
+  saveWorkbook(wb, pathfile, overwrite = TRUE)
+}
 
-# Write output file
-wb <- loadWorkbook(paste0(path2outputs, "annex-tables/template.xlsx"))
-write.page1(wb, proj, pathfile)
-write.page2(wb, proj, pathfile)
-write.page3(wb, both, male, female)
-write.page4(wb, both, male, female)
-write.page5(wb, both, male, female)
-# write.page6(wb, both, male, female)
-# write.page7(wb, both, male, female)
-saveWorkbook(wb, pathfile, overwrite = TRUE)
+write.page7 <- function(wb, both, male, female) {
+  # Do not step through this function!
+  female <- female[, 11:16]
+  for (i in 2:7) {
+    addStyle(wb, sheet = "page7", style = createStyle(numFmt = "#,###,###"), rows = 4:24, cols = i)
+  }
+  writeData(wb, female, sheet = "page7", xy = c(2, 4), array = TRUE, colNames = FALSE)
+}
+  
+
+write.page6 <- function(wb, both, male, female) {
+  # Do not step through this function!
+  #browser()
+  both <- both[, 11:16]
+  male <- male[, 11:16]
+  female <- female[, 11:16]
+  both <- append.indices(both)
+  for (i in 2:10) {
+    addStyle(wb, sheet = "page6", style = createStyle(numFmt = "#,###,###"), rows = 4:24, cols = i)
+  }  
+  writeData(wb, both, sheet = "page6", xy = c(2, 4), array = TRUE, colNames = FALSE)
+  male <- append.sexratio(male, female)
+  for (i in 2:9) {
+    addStyle(wb, sheet = "page6", style = createStyle(numFmt = "#,###,###"), rows = 29:49, cols = i)
+  }
+  writeData(wb, male, sheet = "page6", xy = c(2, 29), array = TRUE, colNames = FALSE)
+}
 
 write.page5 <- function(wb, both, male, female) {
   # Do not step through this function!

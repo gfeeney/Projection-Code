@@ -30,7 +30,7 @@ saveRDS(proj5LM, paste0(path2outputs, "projections/proj5LM.rds"))  # National + 
 
 # Consistency parameters
 cMatrix.pcycles <- vector(mode = "list", length = length(snp5x47LM))
-names(cMatrixList) <- pcycles
+names(cMatrix.pcycles) <- pcycles
 for (i in 1:length(snp5x47LM)){
   cMatrix.pcycles[[i]] <- attr(snp5x47LM[[i]], "rMatrix")
 }
@@ -40,15 +40,4 @@ lapply(cMatrix.pcycles, round, 3)
 # Look at county population change
 proj5Totals <- t(sapply(proj5LM, get.projTotals))
 write.csv(proj5Totals, paste0(path2outputs, "projections/proj5Totals.csv"))
-proj5TotalsSorted <- sort.PlacesByGrowth(proj5Totals)
-proj5TotalsSorted
-write.csv(proj5TotalsSorted, paste0(path2outputs, "projections/proj5TotalsSorted.csv"))
-
-# Look at components of change for counties
-get.ComponentsMatrix(proj5Totals$Kwale)
-# get.ComponentsMatrix(snp$Kilifi)
-# get.ComponentsMatrix(snp$`Tana River`)
-# get.ComponentsMatrix(snp$`Taita-Taveta`)
-# get.ComponentsMatrix(snp$Garissa)
-# get.ComponentsMatrix(snp$Baringo)
-# get.ComponentsMatrix(snp$Vihiga)
+sort.PlacesByGrowth(proj5Totals)
