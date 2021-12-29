@@ -16,11 +16,10 @@ library(xlsx)  # openxlsx does not read .xls files
 # STEP 1: paste0(path2inputs, "nLx/LEBlist.rds")
 # STEP 2: paste0(path2inputs, "nLx/nLxCensusList.rds")
 # STEP 3: paste0(path2inputs, "nLx/nLxLimit.rds")
-# STEP 4: paste0(path2inputs, "nLx/nLx.rds")  # THIS IS THE OBJECTIVE!
+# STEP 4: paste0(path2inputs, "nLx/nLx.rds")  # THIS IS THE OBJECTIVE
 
 # QUESTION Has Schola redone the extrapolated LEBs for each place and pcycle
-# based on the final 2019 census nLx values? I don't have these spreadsheets,
-# only an LEBlist.rds file. that is why the code below is commented out.
+# based on the final 2019 census nLx values? I don't have these spreadsheets.
 
 # STEP 1 Read in extrapolated Life Expectancy at Birth for each place and pcycle
 # OUTPUT LEBlist
@@ -66,16 +65,14 @@ round(LEBm, 1)
 fivenum(round(LEBm, 1)[, 1])
 fivenum(round(LEBm, 1)[, 2])
 
-# STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2
-# Read in 2019 census nLx estimates
+# STEP 2 Read in 2019 census nLx estimates
 # OUTPUT nLxCensusList
-pathfile <- paste0(path2inputs, "nLx/census2019-nLx-estimates20211118.xlsx")
-x <- read.xlsx(pathfile, sheetName = "main")
+pathfile <- paste0(path2inputs, "nLx/source/census2019-nLx-estimates-20211118.xlsx")
+x <- read.xlsx(pathfile, sheetName = "Sheet1")
 rownames(x) <- x[, 1]
 nLxDF <- x[, -1]
 rm(x)
-nLxDF
-# View(nLxDF)
+View(nLxDF)
 # WARNING!!! Column names are not standard! Should be rectified in source file
 
 nLxCensusList <- vector(mode = "list", length = dim(nLxDF)[2])
@@ -90,10 +87,10 @@ for (j in 1:length(nLxCensusList)) {
 rm(x)
 nLxCensusList
 saveRDS(nLxCensusList, paste0(path2inputs, "nLx/nLxCensusList.rds"))
+# Please check the Nairobi nLx values, something seems to be wrong
 
-# STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3
-# Read in nLx Limit values
-pathfile <- paste0(path2inputs, "nLx/Method/limit-model.xlsx")
+# STEP 3 Read in nLx Limit values
+pathfile <- paste0(path2inputs, "nLx/source/MLTF/limit-model.xlsx")
 x <- read.xlsx(pathfile, sheetName = "limit-model", 
                startRow = 1, endRow = 22, colIndex = c(1,3:6))
 rownames(x) <- as.character(x[, 1])
@@ -107,8 +104,7 @@ saveRDS(nLxLimit, paste0(path2inputs, "nLx/nLxLimit.rds"))
 apply(nLxLimit, 2, sum)  # Limit nLx values for females and males
 # write.csv(nLxLimit, paste0(path2inputs, "nLx/nLxLimit.csv"))
 
-# STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4
-# Calculate nLx list input to projection function by interpolation between 
+# STEP 4 Calculate nLx list input to projection function by interpolation between 
 # Census nLx and Limit nLx
 interpolate.nLx <- function(LEB, nLx0, nLx1) {
   # LEB <- LEBlist[[1]]["Female", pcycles[1]]
