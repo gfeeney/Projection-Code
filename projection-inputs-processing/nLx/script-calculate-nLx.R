@@ -4,7 +4,7 @@ pcycles <- metadata$time$pcycles
 path2inputs <- metadata$paths$path2inputs
 path2R <- metadata$paths$path2R
 source(paste0(path2R, "projection.R"))
-library(xlsx)
+library(xlsx)  # openxlsx does not read .xls files
 
 # INPUT FILES
 # paste0(path2inputs, "/nLx/LEB/") (1 file for each place)
@@ -22,16 +22,15 @@ library(xlsx)
 # based on the final 2019 census nLx values? I don't have these spreadsheets,
 # only an LEBlist.rds file. that is why the code below is commented out.
 
-# STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1
-# Read in extrapolated Life Expectancy at Birth for each place and pcycle
+# STEP 1 Read in extrapolated Life Expectancy at Birth for each place and pcycle
 # OUTPUT LEBlist
-path <- paste0(path2inputs, "nLx/LEB/")
+path <- paste0(path2inputs, "nLx/source/LEB20210927/")
 filenames <- dir(path)
 LEB <- vector(mode = "list", length = length(filenames))
 names(LEB) <- places
 for (i in 1:length(LEB)) {
   filename <- paste0(path, filenames[i])
-  x <- read.xlsx(filename, sheetName = "E0LGST", startRow = 10, endRow = 40,
+  x <- read.xlsx(filename, sheetName = "E0LGST", rowIndex = 10:40, 
                  colIndex = 6:8)
   colnames(x) <- c("Year", "Male", "Female")
   rownames(x) <- x[, "Year"]
@@ -55,6 +54,17 @@ saveRDS(LEBlist, paste0(path2inputs, "nLx/LEBlist.rds"))
 LEBlist <- readRDS(paste0(path2inputs, "nLx/LEBlist.rds"))
 # LEBlist is list of 2x5 matrices (Sex x pcycle) for each place, Kenya and the
 # 47 counties
+
+# Please review inputs
+LEBf <- t(sapply(LEBlist, function(x){x[1, ]}))
+round(LEBf, 1)
+fivenum(round(LEBf, 1)[, 1])
+fivenum(round(LEBf, 1)[, 5])
+
+LEBm <- t(sapply(LEBlist, function(x){x[2, ]}))
+round(LEBm, 1)
+fivenum(round(LEBm, 1)[, 1])
+fivenum(round(LEBm, 1)[, 2])
 
 # STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2
 # Read in 2019 census nLx estimates
