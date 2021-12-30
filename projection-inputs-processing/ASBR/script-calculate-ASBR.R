@@ -13,10 +13,8 @@ library(xlsx)
 # paste0(path2inputs, "ASBR/CensusASBRs.rds")
 # paste0(path2inputs, "ASBR/ASBR.rds")  # THIS IS THE OBJECTIVE!
 
-
-# STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1
-# Import extrapolated TFRs from .xls files
-path <- paste0(path2inputs, "ASBR/src/TFR_Pasex/")
+# STEP 1 Import extrapolated TFRs from .xls files
+path <- paste0(path2inputs, "ASBR/source/TFR_Pasex/")
 filenames <- dir(path)
 filenames
 TFRlist <- vector(mode = "list", length = length(filenames))
@@ -42,24 +40,31 @@ TFRmid <- function(x, pcycles) {
 TFR <- do.call(rbind, lapply(TFRlist, TFRmid, pcycles))
 rownames(TFR) <- metadata$place$places
 TFR
-saveRDS(TFR, paste0(path2inputs, "ASBR/TFR.rds"))
+round(TFR, 2)
+fivenum(round(TFR[, 1], 2))
+fivenum(round(TFR[, 5], 2))
 
-# STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2
-# Read in 2019 census ASBR estimates
-pathfile <- paste0(path2inputs, "ASBR/src/Census2019ASBRestimates.xlsx")
+# STEP 2 Read in 2019 census ASBR estimates
+pathfile <- paste0(path2inputs, "ASBR/source/Census2019ASBRestimates.xlsx")
 x <- read.xlsx(pathfile, sheetName = "main", colIndex = 1:8)
 rownames(x) <- as.character(x[, 1])
 x <- as.matrix(x[, -1])
 colnames(x) <- c("15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49")
 CensusASBRs <- x
 CensusASBRs
-saveRDS(CensusASBRs, paste0(path2inputs, "ASBR/CensusASBRs.rds"))
+CensusTFRs <- 5 * apply(CensusASBRs, 1, sum)
+CensusTFRs
+fivenum(CensusTFRs)
+sort(CensusTFRs)
+# TFR of 8 children/woman? Really? Wildly implausible. Note however that the
+# TFRs used for projection come from STEP 1 above. Unclear whether these 
+# inputs reflect these high TFRs ()
 
-# STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3
-# Calculate ASBR projection input list from TFR and CensusASBRs
+# STEP 3 Calculate ASBR projection input list from TFR and CensusASBRs
 # SRB <- rep(1.03, times = 48)  # Be sure this is what we want
 # Following data received 27-Sep-2021 from Paul Waweru Ngogi via Telegram msg
-pathfile <- paste0(path2inputs, "ASBR/src/20210927-SexRatioatBirth2019.xlsx")
+pathfile <- paste0(path2inputs, "ASBR/source/20210927-SexRatioatBirth2019.xlsx")
+# Are you sure you want to go with these sex ratios at birth?
 x <- read.xlsx(pathfile, sheetName = "main", colIndex = 1:2)
 SRB <- x[, 2]
 places <- metadata$place$places
@@ -84,5 +89,3 @@ for (i in 1:length(places)) {
 }
 ASBR <- lapply(ASBR, round, 4)
 ASBR
-saveRDS(ASBR, paste0(path2inputs, "ASBR/ASBR.rds"))
-
