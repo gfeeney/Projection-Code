@@ -1,10 +1,9 @@
 metadata <- readRDS("metadata.rds")
 source(paste0(metadata$paths$path2R, "projection.R"))
 path2inputs <- metadata$paths$path2inputs
-library(xlsx)  # Bloody hell! package load problem
+library(xlsx)
 
-# STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1 STEP 1
-# Import 2019 and 2009 census age-sex distributions for Kenya and counties 
+# STEP 1 Import 2019 and 2009 census age-sex distributions for Kenya + counties 
 # as matrices and save to .rds
 get.censusasd5 <- function(pathfile) {
   x <- read.xlsx(file = pathfile, sheetName = 1, 
@@ -20,23 +19,18 @@ get.censusasd5 <- function(pathfile) {
 }
 
 census2019asd5 <- get.censusasd5(paste0(path2inputs, 
-                                        "BaseASD/src/census2019asd5.xlsx"))
+                                        "BaseASD/source/census2019asd5.xlsx"))
 colnames(census2019asd5) <- metadata$place$places
 census2019asd5[, 1] - apply(census2019asd5[, 2:48], 1, sum)  # Input data check
 View(census2019asd5)
-saveRDS(census2019asd5, paste0(path2inputs, "BaseASD/census2019asd5.rds"))
-write.csv(census2019asd5, paste0(path2inputs, "BaseASD/census2019asd5.csv"))
 
 census2009asd5 <- get.censusasd5(paste0(path2inputs, 
-                                        "BaseASD/src/census2009asd5.xlsx"))
+                                        "BaseASD/source/census2009asd5.xlsx"))
 colnames(census2009asd5) <- metadata$place$places
 census2009asd5[, 1] - apply(census2009asd5[, 2:48], 1, sum)  # Input data check
 View(census2009asd5)
-saveRDS(census2009asd5, paste0(path2inputs, "BaseASD/census2009asd5.rds"))
-write.csv(census2009asd5, paste0(path2inputs, "BaseASD/census2009asd5.csv"))
 
-# STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2 STEP 2
-# Smooth older age group numbers by unZigZag method
+# STEP 2 Smooth older age group numbers by unZigZag method
 asd5adj <- census2019asd5
 asd5adj[ , ] <- 0
 pathfile <- paste0(path2inputs, "BaseASD/plots/census2019unZigZagPlots.pdf")
@@ -70,9 +64,8 @@ pathfile <- paste0(path2inputs, "BaseASD/census2019asd5adj.rds")
 saveRDS(census2019asd5adj, pathfile)
 # DO NOT ROUND HERE!
 
-# STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3 STEP 3
-# Move adjusted 2019 Census age-sex distribution forward to mid-2020 using 
-# 2009-2019 growth rate
+# STEP 3 Move adjusted 2019 Census age-sex distribution forward to mid-2020 
+# using 2009-2019 growth rate
 total2019 <- sum(census2019asd5[, "Kenya"])
 total2009 <- sum(census2009asd5[, "Kenya"])
 r <- log(total2019/total2009)/10
@@ -88,8 +81,7 @@ View(BaseASD)
 saveRDS(BaseASD, paste0(path2inputs, "BaseASD/BaseASD.rds"))
 write.csv(BaseASD, paste0(path2inputs, "BaseASD/BaseASD.csv"))
 
-# STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4 STEP 4
-# Interpolate unZigZagged 5 year age distributions to single years using
+# STEP 4 Interpolate unZigZagged 5 year age distributions to single years using
 # modified midpoint interpolation
 # Initialize output matrix
 BaseASDsy <- matrix(0, nrow = 2 * 96, ncol = 48)
@@ -97,7 +89,7 @@ AG <- getAG(1, 95)
 rownames(BaseASDsy) <- c(paste0("f", AG), paste0("m", AG))
 colnames(BaseASDsy) <- colnames(BaseASD)
 BaseASDsy[c("f95+", "m95+"), ] <- BaseASD[c("f95+", "m95+"), ]
-# View(BaseASDsy)
+View(BaseASDsy)
 
 # Interpolate to single years
 adjfac <- rep(1, times = 19)
@@ -124,8 +116,6 @@ BaseASDsy[, 2:48] <- BaseASDsy[, 2:48] * matrix(CFA, nrow = length(CFA), ncol = 
 BaseASDsy[, 1] - apply(BaseASDsy[, 2:48], 1, sum)
 CFA <- BaseASDsy[, 1] / apply(BaseASDsy[, 2:48], 1, sum)
 CFA
-saveRDS(BaseASDsy, paste0(path2inputs, "BaseASD/BaseASDsy.rds"))
-write.csv(BaseASDsy, paste0(path2inputs, "BaseASD/BaseASDsy.csv"))
 
 # Plot interpolated distributions
 pathfile <- paste0(path2inputs, "BaseASD/plots/BaseASDsyPlots.pdf")
