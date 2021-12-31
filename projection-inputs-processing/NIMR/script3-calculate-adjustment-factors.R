@@ -32,7 +32,6 @@ NIMout <- apply(NIMsc[, countiesOUT], 1, sum)
 NIMin <- apply(NIMsc[, countiesIN], 1, sum)
 NIM1yr <- cbind(NIMout, NIMin)
 NIM1yr
-################################### Need .rds this?
 
 # STEP 3: Create corresponding matrix from LTCSRMig spreadsheets applied
 # to 2009 and 2019 age-sex distributions
