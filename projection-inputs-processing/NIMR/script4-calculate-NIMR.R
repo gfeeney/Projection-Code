@@ -50,7 +50,7 @@ NIMR5x5 <- NIM5x5 / ASD5[, -1]  # 1st column of ASD5 is Kenya
 # View(round(NIMR5x5, 1))  # Rising rates over age 65 unacceptable
 NIMR5x5 <- impute.NIMR5x5.65plus(NIMR5x5, Fac = 0.4)
 NIMR5x5 <- round(NIMR5x5, 4)
-# View(NIMR5x5)
+View(NIMR5x5)
 NIMRc <- calculate.NIMR(NIMR5x5, md = metadata)
 saveRDS(NIMRc, paste0(path2inputs, "NIMR/NIMRc.rds"))
 
@@ -67,6 +67,6 @@ introduce.trend <- function(NIMRi) {
 }
 NIMRd <- lapply(NIMRc, introduce.trend)
 NIMRd <- lapply(NIMRd, round, 4)
-# View(NIMRd[[2]])
+View(NIMRd[[2]])
 saveRDS(NIMRd, paste0(path2inputs, "NIMR/NIMRd.rds"))
 

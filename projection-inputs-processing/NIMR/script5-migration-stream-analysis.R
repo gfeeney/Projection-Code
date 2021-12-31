@@ -6,7 +6,6 @@ metadata <- readRDS("metadata.rds")
 path2inputs <- metadata$paths$path2inputs
 path2R <- metadata$paths$path2R
 source(paste0(path2R, "projection.R"))
-source("metadata.R")
 
 # Read in 2019 and 2009 census migration data
 md2019 <- readRDS(paste0(path2inputs, "NIMR/MigData2019.rds"))
@@ -57,8 +56,6 @@ colnames(ToFrom)
 
 streams <- get.streams(ToFrom)
 View(streams)
-
-
 
 # NEXT STEPS: (1) Consider what streams should be ignored because the 
 # numbers are too small to be statistically stable. How to handle 

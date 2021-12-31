@@ -14,7 +14,7 @@ colnames(crude.rates) <- c("Births", "Deaths", "NatInc", "NetMig", "PYL", "CBR",
 for (i in 1:length(projLM)) {
   proj <- projLM[[i]]
   place1 <- names(projLM)[i]
-  place2 <- paste0(metadata$place$codes[i], place)
+  place2 <- paste0(metadata$place$codes[i], place1)
   ad <- get.AgeSexDistribution(proj)[, , "both"]
   totals <- apply(ad, 2, sum)
   PYL <- ((5 / 2) * (totals[1:5] + totals[2:6])) / 1000

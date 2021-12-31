@@ -23,12 +23,14 @@ census2019asd5 <- get.censusasd5(paste0(path2inputs,
 colnames(census2019asd5) <- metadata$place$places
 census2019asd5[, 1] - apply(census2019asd5[, 2:48], 1, sum)  # Input data check
 View(census2019asd5)
+saveRDS(census2019asd5, paste0(path2inputs, "/BaseASD/census2019asd5.rds"))
 
 census2009asd5 <- get.censusasd5(paste0(path2inputs, 
                                         "BaseASD/source/census2009asd5.xlsx"))
 colnames(census2009asd5) <- metadata$place$places
 census2009asd5[, 1] - apply(census2009asd5[, 2:48], 1, sum)  # Input data check
 View(census2009asd5)
+saveRDS(census2009asd5, paste0(path2inputs, "/BaseASD/census2009asd5.rds"))
 
 # STEP 2 Smooth older age group numbers by unZigZag method
 asd5adj <- census2019asd5
