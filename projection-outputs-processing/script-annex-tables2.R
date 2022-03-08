@@ -7,9 +7,16 @@ require("openxlsx")
 # Gotcha: If target .xlsx file is open, code will silently fail
 
 projLM <- readRDS(paste0(path2outputs, "projections/proj5LM.rds"))
+
+# Initialize list for annual projected age distributions for both sexes
+# for calculation of school age numbers
+school <- vector(mode = "list", length = length(projLM))
+names(school) <- names(projLM)
+# End Initialize List for annual . . .
+
 for (i in 1:length(projLM)) {
-  # Initialize for 5 year projection results
- proj <- projLM[[i]]        # input projection
+  # Initialize for 5 year projection results (List Matrix)
+  proj <- projLM[[i]]        # input projection
   place <- names(projLM)[i]
   filename <- paste0(metadata$place$codes[i], place, ".xlsx")
   pathfile <- paste0(path2outputs, "annex-tables2/", filename)  # output file
@@ -27,7 +34,9 @@ for (i in 1:length(projLM)) {
   both <- female + male
   rownames(both)[21] <- "All Ages"
   
-  # Write output file
+  school[[i]] <- both  # For calculation of school age numbers
+  
+  # Write output file for annual projections
   wb <- loadWorkbook(paste0(path2outputs, "annex-tables2/template2.xlsx"))
   # write.page1(wb, proj, pathfile)
   # write.page2(wb, proj, pathfile)
@@ -38,3 +47,7 @@ for (i in 1:length(projLM)) {
   write.page7(wb, both, male, female)
   saveWorkbook(wb, pathfile, overwrite = TRUE)
 }
+
+# Save 'school' list to annex-tables3 directory for school age number
+# calculations
+saveRDS(school, paste0(path2outputs, "annex-tables3/school.rds"))

@@ -9,7 +9,7 @@ require(openxlsx)
 
 projLM <- readRDS(paste0(path2outputs, "projections/proj5LM.rds"))
 for (i in 1:length(projLM)) {
-  # Initialize for 5 year projection results
+  # Initialize for 5 year projection results (List Matrix)
   proj <- projLM[[i]]        # input projection
   place <- names(projLM)[i]
   filename <- paste0(metadata$place$codes[i], place, ".xlsx")

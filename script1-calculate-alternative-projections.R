@@ -52,7 +52,7 @@ write.csv(proj4Totals, paste0(path2outputs, "projections/proj4Totals.csv"))
 sort.PlacesByGrowth(proj4Totals)
 
 # PROJECTION 5: NIMRd with reconciliation of subnational nation to national projections
-# See script-projections-reconciliation.R
+# See script2-calculate-consistent-subnational-projections.R
 
               
 

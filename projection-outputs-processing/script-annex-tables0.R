@@ -1,3 +1,10 @@
+# This was the first version of the output tables script. It presented the
+# 5 year age group/time period results together with the interpolated
+# annual numbers. It was then decided to separate these into separate
+# annex tables, so this script was replaced by script-annex-tabels1.R
+# and script-annex-tables2.R. Subsequently script-annex-tables3.R was
+# created to produce projected annual school age numbers.
+
 metadata <- readRDS("metadata.rds")
 path2inputs <- metadata$paths$path2inputs
 path2outputs <- metadata$paths$path2outputs
@@ -10,7 +17,7 @@ require(openxlsx)
 
 projLM <- readRDS(paste0(path2outputs, "projections/proj5LM.rds"))
 for (i in 1:length(projLM)) {
-  # Initialize for 5 year projection results
+  # Initialize for 5 year projection results (List Matrix)
   proj <- projLM[[i]]        # input projection
   place <- names(projLM)[i]
   filename <- paste0(metadata$place$codes[i], place, ".xlsx")
